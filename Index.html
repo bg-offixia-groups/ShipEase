@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShipEase - Package Tracking & Shipping</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2c5aa0;
+            --primary-dark: #1e3d73;
+            --secondary: #f8a31b;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .hero-section {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 80px 0;
+            margin-bottom: 40px;
+        }
+
+        .tracking-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .status-badge {
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .status-pending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .status-processing {
+            background-color: #cce7ff;
+            color: #004085;
+        }
+
+        .status-intransit {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .status-delivered {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+            margin: 20px 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 10px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background-color: #e9ecef;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -24px;
+            top: 5px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: var(--primary);
+        }
+
+        .timeline-item.active::before {
+            background-color: var(--success);
+        }
+
+        .package-card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+            margin-bottom: 20px;
+        }
+
+        .package-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            border-color: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary);
+            border-color: var(--secondary);
+            color: white;
+        }
+
+        .footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 40px 0;
+            margin-top: 60px;
+        }
+
+        .login-container {
+            max-width: 400px;
+            margin: 100px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .admin-dashboard {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <i class="fas fa-shipping-fast me-2"></i>ShipEase
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="tracking.html">Track Package</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="shipping.html">Create Shipment</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="login.html">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-primary" href="register.html">Sign Up</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h1 class="display-4 fw-bold mb-4">Fast, Reliable Shipping Solutions</h1>
+                    <p class="lead mb-4">Ship your packages with confidence. Track in real-time and get instant notifications.</p>
+                    <div class="d-flex gap-3">
+                        <a href="shipping.html" class="btn btn-light btn-lg">Create Shipment</a>
+                        <a href="tracking.html" class="btn btn-outline-light btn-lg">Track Package</a>
+                    </div>
+                </div>
+                <div class="col-lg-6 text-center">
+                    <img src="https://cdn.pixabay.com/photo/2020/03/18/16/08/parcel-4944305_1280.png" alt="Shipping" class="img-fluid" style="max-height: 300px;">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tracking Section -->
+    <section class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="tracking-card">
+                    <h2 class="mb-4">Track Your Package</h2>
+                    <div class="input-group mb-4">
+                        <input type="text" class="form-control form-control-lg" placeholder="Enter tracking number" id="trackingInput">
+                        <button class="btn btn-primary btn-lg" type="button" id="trackButton">Track</button>
+                    </div>
+                    
+                    <!-- Tracking Result -->
+                    <div id="trackingResult" style="display: none;">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div>
+                                <h4 id="packageStatus" class="mb-1">In Transit</h4>
+                                <p class="text-muted mb-0">Tracking ID: <span id="trackingId">TRK123456789</span></p>
+                            </div>
+                            <span class="status-badge status-intransit" id="statusBadge">In Transit</span>
+                        </div>
+                        
+                        <div class="timeline">
+                            <div class="timeline-item active">
+                                <h5>Package Delivered</h5>
+                                <p class="text-muted mb-1">Delivered to recipient</p>
+                                <small>Oct 15, 2023 10:30 AM</small>
+                            </div>
+                            <div class="timeline-item">
+                                <h5>Out for Delivery</h5>
+                                <p class="text-muted mb-1">Package is out for delivery</p>
+                                <small>Oct 15, 2023 8:15 AM</small>
+                            </div>
+                            <div class="timeline-item">
+                                <h5>Arrived at Local Facility</h5>
+                                <p class="text-muted mb-1">Package arrived at local distribution center</p>
+                                <small>Oct 14, 2023 6:45 PM</small>
+                            </div>
+                            <div class="timeline-item">
+                                <h5>In Transit</h5>
+                                <p class="text-muted mb-1">Package departed from origin facility</p>
+                                <small>Oct 13, 2023 2:20 PM</small>
+                            </div>
+                            <div class="timeline-item">
+                                <h5>Order Processed</h5>
+                                <p class="text-muted mb-1">Package received at origin facility</p>
+                                <small>Oct 12, 2023 11:30 AM</small>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <h5>Sender Information</h5>
+                                <p id="senderInfo">
+                                    John Smith<br>
+                                    123 Main St<br>
+                                    New York, NY 10001<br>
+                                    (555) 123-4567
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <h5>Recipient Information</h5>
+                                <p id="recipientInfo">
+                                    Jane Doe<br>
+                                    456 Oak Ave<br>
+                                    Los Angeles, CA 90210<br>
+                                    (555) 987-6543
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <button class="btn btn-secondary" id="printReceipt">
+                                <i class="fas fa-print me-2"></i>Print Receipt
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="container my-5">
+        <div class="row text-center mb-5">
+            <div class="col">
+                <h2>Why Choose ShipEase?</h2>
+                <p class="lead">We provide comprehensive shipping solutions for all your needs</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card package-card h-100">
+                    <div class="card-body text-center p-4">
+                        <div class="mb-3">
+                            <i class="fas fa-shipping-fast fa-3x text-primary"></i>
+                        </div>
+                        <h4 class="card-title">Fast Delivery</h4>
+                        <p class="card-text">Express shipping options with guaranteed delivery times.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card package-card h-100">
+                    <div class="card-body text-center p-4">
+                        <div class="mb-3">
+                            <i class="fas fa-map-marker-alt fa-3x text-primary"></i>
+                        </div>
+                        <h4 class="card-title">Real-Time Tracking</h4>
+                        <p class="card-text">Track your package in real-time with detailed status updates.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card package-card h-100">
+                    <div class="card-body text-center p-4">
+                        <div class="mb-3">
+                            <i class="fas fa-lock fa-3x text-primary"></i>
+                        </div>
+                        <h4 class="card-title">Secure & Insured</h4>
+                        <p class="card-text">All shipments are fully insured and handled with care.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <h5><i class="fas fa-shipping-fast me-2"></i>ShipEase</h5>
+                    <p>Providing reliable shipping solutions since 2015.</p>
+                </div>
+                <div class="col-md-2 mb-4">
+                    <h5>Services</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-light">Domestic Shipping</a></li>
+                        <li><a href="#" class="text-light">International Shipping</a></li>
+                        <li><a href="#" class="text-light">Express Delivery</a></li>
+                        <li><a href="#" class="text-light">Package Tracking</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-2 mb-4">
+                    <h5>Company</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-light">About Us</a></li>
+                        <li><a href="#" class="text-light">Careers</a></li>
+                        <li><a href="#" class="text-light">Contact</a></li>
+                        <li><a href="#" class="text-light">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <h5>Contact Us</h5>
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-phone me-2"></i> (555) 123-4567</li>
+                        <li><i class="fas fa-envelope me-2"></i> support@shipease.com</li>
+                        <li><i class="fas fa-map-marker-alt me-2"></i> 123 Shipping Ave, Logistics City</li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="my-4">
+            <div class="text-center">
+                <p>&copy; 2023 ShipEase. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script>
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            // Track package functionality
+            const trackButton = document.getElementById('trackButton');
+            const trackingInput = document.getElementById('trackingInput');
+            const trackingResult = document.getElementById('trackingResult');
+            
+            trackButton.addEventListener('click', function() {
+                const trackingNumber = trackingInput.value.trim();
+                
+                if (trackingNumber === '') {
+                    alert('Please enter a tracking number');
+                    return;
+                }
+                
+                // Simulate API call to get tracking information
+                simulateTrackingLookup(trackingNumber);
+            });
+            
+            // Print receipt functionality
+            const printReceipt = document.getElementById('printReceipt');
+            printReceipt.addEventListener('click', function() {
+                generateReceipt();
+            });
+            
+            // Simulate tracking lookup
+            function simulateTrackingLookup(trackingNumber) {
+                // In a real application, this would be an API call to the backend
+                console.log(`Looking up tracking number: ${trackingNumber}`);
+                
+                // Show loading state
+                trackingResult.style.display = 'none';
+                trackButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status"></span> Tracking...';
+                
+                // Simulate API delay
+                setTimeout(function() {
+                    // Update tracking information
+                    document.getElementById('trackingId').textContent = trackingNumber;
+                    
+                    // Show tracking result
+                    trackingResult.style.display = 'block';
+                    trackButton.innerHTML = 'Track';
+                    
+                    // Update status based on tracking number (simulated logic)
+                    updatePackageStatus(trackingNumber);
+                }, 1500);
+            }
+            
+            // Update package status based on tracking number
+            function updatePackageStatus(trackingNumber) {
+                const statusElement = document.getElementById('packageStatus');
+                const statusBadge = document.getElementById('statusBadge');
+                
+                // Simple simulation based on tracking number
+                if (trackingNumber.endsWith('1')) {
+                    statusElement.textContent = 'Delivered';
+                    statusBadge.textContent = 'Delivered';
+                    statusBadge.className = 'status-badge status-delivered';
+                } else if (trackingNumber.endsWith('2')) {
+                    statusElement.textContent = 'In Transit';
+                    statusBadge.textContent = 'In Transit';
+                    statusBadge.className = 'status-badge status-intransit';
+                } else if (trackingNumber.endsWith('3')) {
+                    statusElement.textContent = 'Processing';
+                    statusBadge.textContent = 'Processing';
+                    statusBadge.className = 'status-badge status-processing';
+                } else {
+                    statusElement.textContent = 'Pending';
+                    statusBadge.textContent = 'Pending';
+                    statusBadge.className = 'status-badge status-pending';
+                }
+            }
+            
+            // Generate printable receipt
+            function generateReceipt() {
+                // In a real application, this would use pdfmake or similar library
+                // For this demo, we'll create a simple printable receipt
+                
+                const trackingId = document.getElementById('trackingId').textContent;
+                const senderInfo = document.getElementById('senderInfo').textContent;
+                const recipientInfo = document.getElementById('recipientInfo').textContent;
+                const status = document.getElementById('packageStatus').textContent;
+                
+                const receiptWindow = window.open('', '_blank');
+                receiptWindow.document.write(`
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <title>ShipEase Receipt - ${trackingId}</title>
+                        <style>
+                            body { font-family: Arial, sans-serif; margin: 20px; }
+                            .header { text-align: center; margin-bottom: 30px; }
+                            .receipt-info { margin-bottom: 20px; }
+                            .section { margin-bottom: 25px; }
+                            .barcode { text-align: center; margin: 20px 0; font-family: 'Libre Barcode 128', cursive; font-size: 36px; }
+                            @media print {
+                                body { margin: 0; }
+                                .no-print { display: none; }
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="header">
+                            <h1>ShipEase</h1>
+                            <h2>Shipping Receipt</h2>
+                        </div>
+                        
+                        <div class="receipt-info">
+                            <p><strong>Tracking ID:</strong> ${trackingId}</p>
+                            <p><strong>Status:</strong> ${status}</p>
+                            <p><strong>Date:</strong> ${new Date().toLocaleDateString()}</p>
+                        </div>
+                        
+                        <div class="section">
+                            <h3>Sender Information</h3>
+                            <p>${senderInfo.replace(/\n/g, '<br>')}</p>
+                        </div>
+                        
+                        <div class="section">
+                            <h3>Recipient Information</h3>
+                            <p>${recipientInfo.replace(/\n/g, '<br>')}</p>
+                        </div>
+                        
+                        <div class="section">
+                            <h3>Package Details</h3>
+                            <p><strong>Description:</strong> Electronics</p>
+                            <p><strong>Weight:</strong> 2.5 kg</p>
+                            <p><strong>Dimensions:</strong> 30x20x15 cm</p>
+                            <p><strong>Shipping Method:</strong> Express</p>
+                            <p><strong>Total Cost:</strong> $24.50</p>
+                        </div>
+                        
+                        <div class="barcode">
+                            *${trackingId}*
+                        </div>
+                        
+                        <div class="no-print" style="margin-top: 30px;">
+                            <button onclick="window.print()">Print Receipt</button>
+                            <button onclick="window.close()">Close</button>
+                        </div>
+                    </body>
+                    </html>
+                `);
+                receiptWindow.document.close();
+            }
+        });
+    </script>
+</body>
+</html>
